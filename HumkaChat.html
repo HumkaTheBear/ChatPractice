@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+		<style media="screen">
+		*{
+			font-family: 'VT323', monospace;
+			font-size: 20px;
+		}
+		body{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+			margin: 0;
+			padding: 0;
+		}
+		body>fieldset{
+			width: 400px;
+			height:300px;
+			margin-top: 200px;
+			background-color: AliceBlue;
+		}
+		#chatWindow{
+			width:100%;
+			height: 190px;
+			background-color: white;
+			outline: 1px solid grey;
+			overflow-y: scroll;
+		}
+		#inputWndow>textarea{
+			resize: none;
+			width: 395px;
+			height: 85px;
+			background-color: white;
+			outline:1px solid lightgrey;
+			margin-top: 8px;
+		}
+		#chatWindow>div{
+			max-width: 100%;
+		}
+		label:hover{
+			cursor: pointer;
+			background-color: lightblue;
+		}
+
+		</style>
+	</head>
+	<body>
+		<fieldset>
+			<legend>Welcome!</legend>
+			<div id="chatWindow">
+
+			</div>
+			<div id="inputWndow">
+				<textarea rows="8" cols="80"></textarea>
+				<button type="button" name="signout" style="display:none">Sign Out</button>
+			</div>
+		</fieldset>
+		<script>
+			var chatWindow  = document.querySelector("#chatWindow");
+			var inputWndow  = document.querySelector("#inputWndow");
+			var inputForm   = inputWndow.querySelector("textarea");
+			var currentuser = "";
+			var red = new XMLHttpRequest();
+			red.onreadystatechange = function(){
+				if (red.readyState===4 && red.status===200) {
+					if (red.responseText !== "") {
+						inputForm.readOnly  = false;
+						document.querySelector("legend").innerHTML += " "+red.responseText;
+						currentuser = red.responseText;
+						inputForm.innerHTML = '';
+						inputWndow.innerHTML  = '<textarea rows="8" cols="80" maxlength="150"></textarea><button type="button" name="signout">Sign Out</button>';
+						inputWndow.querySelector("button").addEventListener("click", function () {
+							var del = new XMLHttpRequest();
+							del.onreadystatechange = function(){
+								if (del.readyState===4 && del.status===200) {
+									window.location.replace("Welcome.html");
+								}
+							}
+							del.open("POST", "accountHandle.php");
+							var forSend = {
+								delete: "delete"
+							}
+							forSend = JSON.stringify(forSend);
+							del.send(forSend);
+						});
+						//TODO instead of replacing whole innerHTML use parents nth child
+						var inputFormAfter = inputWndow.querySelector("textarea");
+						inputFormAfter.addEventListener("input", function(){
+							// console.log("Checking..." + document.querySelector("textarea").value);
+							if (inputFormAfter.value.trim().indexOf("@")===0) {
+								inputFormAfter.style.color = "purple";
+							}
+							else{
+								inputFormAfter.style.color = "black";
+							}
+						});
+						inputFormAfter.addEventListener("keypress", function(event){
+							if (event.keyCode === 13 && inputFormAfter.value!=="") {
+								event.preventDefault();
+								var msg = new XMLHttpRequest();
+								msg.onreadystatechange = function(){
+									if (msg.readyState===4 && msg.status===200) {
+										inputFormAfter.value = "";
+									}
+								}
+								msg.open("POST", "accountHandle.php");
+								if (inputFormAfter.style.color === "purple"){
+									var touser = inputFormAfter.value.trim();
+									touser     = touser.split(" ");
+									touser     = touser[0].replace("@", "");
+								}
+								else{touser = "all"}
+								var noUserMsg = inputFormAfter.value.replace("@"+touser+" ", "");
+								if (noUserMsg!=="" && touser!==""){
+									var forSend = {
+										message: noUserMsg,
+										whoto: touser
+									}
+									forSend = JSON.stringify(forSend);
+									msg.send(forSend);
+								}
+							}
+						});
+					}
+					else {
+						inputForm.readOnly     = true;
+						inputForm.innerHTML    = 'Sign in to chat!';
+						inputWndow.innerHTML  += '<a href="Welcome.html">Sign in</a>';
+					}
+				}
+			}
+			red.open("POST", "accountHandle.php");
+			var forSend = {
+				access: "cani?"
+			}
+			forSend = JSON.stringify(forSend);
+			red.send(forSend);
+
+			function history(){
+				var hist = new XMLHttpRequest();
+	            hist.onreadystatechange = function() {
+	                if (hist.readyState === 4 && hist.status === 200) {
+						var response       = hist.responseText;
+						response           = JSON.parse(response);
+						var inputFormAfter = inputWndow.querySelector("textarea");
+						for (var i = 0; i < response.length; i++) {
+							if (response[i].to_user === "all" && response[i].from_user === currentuser){
+								/////////////////////////////////////////////////////
+								var pointer1 = document.createElement("div");
+								pointer1.setAttribute("id", "qwe"+response[i].id); //pointer1.id = "qwe"+response[i].id;
+								pointer1.style.cssText = "color:black";
+								var child1 = document.createTextNode("You: "+response[i].message);
+								pointer1.appendChild(child1);
+								chatWindow.appendChild(pointer1);
+								///////////////////////////////////////////////////////
+							}
+							else if (response[i].to_user === "all"){
+								//////////////////////////////////////////////////////
+								var name     = response[i].from_user;
+								var pointer1 = document.createElement("div");
+								var label1   = document.createElement("label");
+								pointer1.setAttribute("id", "qwe"+response[i].id); //pointer1.id = "qwe"+response[i].id;
+								pointer1.style.cssText = "color:black";
+								var child1   = document.createTextNode(response[i].from_user);
+								var text     = document.createTextNode("@");
+								pointer1.appendChild(text);
+								label1.appendChild(child1);
+								pointer1.appendChild(text)
+								pointer1.appendChild(label1);
+								var child2   = document.createTextNode(": "+response[i].message);
+								pointer1.appendChild(child2);
+								chatWindow.appendChild(pointer1);
+								label1.addEventListener("click", function(){
+									if (inputFormAfter.value.indexOf("@") >= 0) {
+										var upto = inputFormAfter.value.indexOf(" ", inputFormAfter.value.indexOf("@"));
+										if (upto === -1) {
+											inputFormAfter.value       = "@"+name;
+											inputFormAfter.style.color = "purple";
+										}
+										else {
+											var rest = inputFormAfter.value.substring(upto);
+											rest     = rest.trim();
+											inputFormAfter.value       = "@"+name+" "+rest;
+											inputFormAfter.style.color = "purple";
+										}
+									}
+									else {
+										inputFormAfter.value       = "@"+name+" "+inputFormAfter.value.substring(0);
+										inputFormAfter.style.color = "purple";
+									}
+								});
+							}
+							else if (response[i].from_user === currentuser) {
+								//////////////////////////////////////////////////////
+								var name1    = response[i].to_user;
+								var pointer1 = document.createElement("div");
+								var label1   = document.createElement("label");
+								pointer1.setAttribute("id", "qwe"+response[i].id); //pointer1.id = "qwe"+response[i].id;
+								pointer1.style.cssText = "color:purple";
+								var child1   = document.createTextNode(response[i].to_user);
+								var text     = document.createTextNode("To ");
+								pointer1.appendChild(text);
+								label1.appendChild(child1);
+								pointer1.appendChild(label1);
+								var child2   = document.createTextNode(": "+response[i].message);
+								pointer1.appendChild(child2);
+								chatWindow.appendChild(pointer1);
+								//////////////////////////////////////////////
+								label1.addEventListener("click", function(){
+									if (inputFormAfter.value.indexOf("@") >= 0) {
+										var upto = inputFormAfter.value.indexOf(" ", inputFormAfter.value.indexOf("@"));
+										if (upto === -1) {
+											inputFormAfter.value       = "@"+name1;
+											inputFormAfter.style.color = "purple";
+										}
+										else {
+											var rest = inputFormAfter.value.substring(upto);
+											rest = rest.trim();
+											inputFormAfter.value       = "@"+name1+" "+rest;
+											inputFormAfter.style.color = "purple";
+										}
+									}
+									else {
+										inputFormAfter.value       = "@"+name1+" "+inputFormAfter.value.substring(0);
+										inputFormAfter.style.color = "purple";
+									}
+								});
+							}
+							else if (response[i].to_user === currentuser) {
+								////////////////////////////////////////////////////////
+								var name2    = response[i].from_user;
+								var pointer1 = document.createElement("div");
+								var label1   = document.createElement("label");
+								pointer1.setAttribute("id", "qwe"+response[i].id); //pointer1.id = "qwe"+response[i].id;
+								pointer1.style.cssText = "color:purple";
+								var child1   = document.createTextNode(response[i].from_user);
+								var text     = document.createTextNode("From  ");
+								pointer1.appendChild(text);
+								label1.appendChild(child1);
+								pointer1.appendChild(label1);
+								var child2   = document.createTextNode(": "+response[i].message);
+								pointer1.appendChild(child2);
+								chatWindow.appendChild(pointer1);
+								//////////////////////////////////////////////////
+								label1.addEventListener("click", function(){
+									if (inputFormAfter.value.indexOf("@") >= 0) {
+										var upto = inputFormAfter.value.indexOf(" ", inputFormAfter.value.indexOf("@"));
+										if (upto === -1) {
+											inputFormAfter.value       = "@"+name2;
+											inputFormAfter.style.color = "purple";
+										}
+										else {
+											var rest = inputFormAfter.value.substring(upto);
+											rest = rest.trim();
+											inputFormAfter.value       = "@"+name2+" "+rest;
+											inputFormAfter.style.color = "purple";
+										}
+									}
+									else {
+										inputFormAfter.value       = "@"+name2+" "+inputFormAfter.value.substring(0);
+										inputFormAfter.style.color = "purple";
+									}
+								});
+							}
+						}
+						chatWindow.scrollTop = chatWindow.scrollHeight;
+					}
+				}
+
+				hist.open("POST", "accountHandle.php");
+
+				if (chatWindow.innerHTML.trim() === "") {
+					var lastidsend = 0;
+				}
+				else{
+					var lastdiv    = chatWindow.querySelectorAll("div").length;
+					var lastidsend = chatWindow.querySelectorAll("div")[lastdiv-1].id
+					lastidsend     = lastidsend.replace("qwe","");
+				}
+				var forSend = {
+					lastid: lastidsend
+				}
+				forSend = JSON.stringify(forSend);
+				hist.send(forSend);
+			}
+			setInterval(history, 2000);
+		</script>
+	</body>
+</html>

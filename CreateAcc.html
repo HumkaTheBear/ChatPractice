@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>Create your account!</title>
+        <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+        <style>
+        *{
+			font-family: 'VT323', monospace;
+			font-size: 20px;
+		}
+        p{
+            display: inline;
+            color: grey;
+            font-size: 12px;
+        }
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+        }
+        body>form:nth-child(1){
+            width: 400px;
+            height:300px;
+            margin-top: 200px;
+            background-color: AliceBlue;
+        }
+        .normal{
+            width: 100%;
+            height: 40px;
+        }
+        .name{
+            display: inline-block;
+        }
+        </style>
+    </head>
+    <body>
+        <form action="accountHandle.php" method="post">
+            <fieldset>
+                <legend>Account Registration</legend>
+                <div class="normal">
+                    <input type="text" name="username" placeholder="Username" id="username" required> <p>(Should be at least 5 character)</p>
+                </div>
+                <div class="normal">
+                    <input type="password" name="password" placeholder="Password" id="pw1" required> <p>(Should be at least 6 character)</p>
+                </div>
+                <div class="normal">
+                    <input type="password" placeholder="Confirm Password" id="pw2" required>
+                </div>
+                <div class="normal">
+                    <div class="name" >
+                        <input type="text" name="firstName" placeholder="First Name" id="firstName" required>
+                    </div>
+                    <div class="name">
+                        <input type="text" name="lastName" placeholder="Last Name" id="lastName" required>
+                    </div>
+                </div>
+                <div class="normal">
+                    <input type="date" name="birthDay" placeholder="Birth Day" id="bday" required>
+                </div>
+                <div class="normal">
+                    <input type="email" name="email" placeholder="E-mail" id="email" required>
+                </div>
+                <button type="submit" name="submit" disabled>Create!</button>
+                <a href="Welcome.html"><button type="button">Already have an account?</button></a>
+            </fieldset>
+        </form>
+        <script>
+            var bodyElem     = document.querySelector("form");
+            var userElem     = bodyElem.querySelector("#username");
+            var passElem     = bodyElem.querySelector("#pw1");
+            var passConf     = bodyElem.querySelector("#pw2");
+            var frstNameElem = bodyElem.querySelector("#firstName");
+            var lastNameElem = bodyElem.querySelector("#lastName");
+            var birthdayElem = bodyElem.querySelector("#bday");
+            var emailElem    = bodyElem.querySelector("#email");
+            var blocking     = bodyElem.querySelector("button");
+
+            function checknames(){
+                var xml = new XMLHttpRequest();
+                xml.onreadystatechange = function(){
+                    if (xml.readyState===4 && xml.status===200) {
+                        if (xml.responseText === 'exists') {
+                            alert("The username " + userElem.value + " is already exists!\n Try another one!");
+                            userElem.value = "";
+                        }
+                    }
+                }
+
+                xml.open("GET", "accountHandle.php?usercheck=" + userElem.value);
+                xml.send();
+            }
+
+            userElem.addEventListener("change", function(){
+                if (userElem.value.length < 5 ){
+                    alert("Must be at least 5 character");
+                    userElem.value = "";
+                }
+                else{checknames();}
+            });
+
+            passElem.addEventListener("input", function(){
+                if (passElem.value.length > 6){passElem.style.outline = "1px solid green";}
+                else{passElem.style.outline = "1px solid red";}
+            });
+
+            passConf.addEventListener("input", function(){
+                if (passConf.value.length > 6
+                    && passConf.value === passElem.value){
+                    passConf.style.outline = "1px solid green";
+                    blocking.disabled      = false;
+                }
+                else {
+                    passConf.style.outline = "1px solid red";
+                    blocking.disabled      = true;
+                }
+            });
+
+        </script>
+    </body>
+</html>

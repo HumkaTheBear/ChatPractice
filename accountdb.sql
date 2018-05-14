@@ -1,0 +1,18 @@
+USE chat;
+
+CREATE TABLE `users`(
+	`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`username` VARCHAR(64) NOT NULL,
+	`password` VARCHAR(64) NOT NULL,
+	`firstname` VARCHAR(64) NOT NULL,
+	`lastname` VARCHAR(64) NOT NULL,
+	`birthday` DATE NOT NULL,
+	`email` VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE `messages`(
+	`id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`from_user` VARCHAR(64) NOT NULL,
+	`to_user` VARCHAR(64) NOT NULL,
+	`message` VARCHAR(155) CHARACTER SET utf8
+);

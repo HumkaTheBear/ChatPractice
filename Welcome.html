@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8">
+		<title>Welcome</title>
+		<link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+		<style>
+        p{
+            display: inline;
+            color: grey;
+            font-size: 12px;
+        }
+        body{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+        }
+        body>fieldset{
+            width: 400px;
+            height:300px;
+            margin-top: 200px;
+            background-color: AliceBlue;
+        }
+		input{
+			display: block;
+			margin: 20px 0;
+			padding: 10px 20px;
+		}
+		form{
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
+		*{
+			font-family: 'VT323', monospace;
+			font-size: 20px;
+		}
+        </style>
+	</head>
+	<body>
+		<fieldset>
+			<legend>Welcome to the chat!</legend>
+			<form class="" action="accountHandle.php" method="post">
+				<input type="text" name="loginname" placeholder="Username">
+				<input type="password" name="loginpass" placeholder="Password">
+			<div style="margin-top: 60px">
+				<button type="button" name="login">Log in!</button>
+				<a href="CreateAcc.html"><button type="button">Create Account</button></a>
+			</div>
+			</form>
+		</fieldset>
+		<script type="text/javascript">
+			var form       = document.querySelector('form');
+			var formLogin  = form.querySelector("input");
+			var formPass   = form.querySelectorAll("input")[1];
+			var buttonDiv  = document.querySelector("div");
+			var submitBtn  = buttonDiv.querySelector("button");
+			submitBtn.disabled = true;
+
+			formPass.addEventListener("keyup", function(event){
+				event.preventDefault();
+				if (event.keyCode === 13) {
+					submitBtn.click();
+				}
+			});
+
+			function submitBlock() {
+				if (formLogin.value!=="" && formPass.value!=="") {
+                    submitBtn.disabled = false;
+                }
+                else {
+                    submitBtn.disabled = true;
+                }
+			}
+			formLogin.addEventListener("input", submitBlock);
+			formPass.addEventListener("input", submitBlock);
+			submitBtn.addEventListener("click", function(){
+				var sub = new XMLHttpRequest();
+                sub.onreadystatechange = function(){
+                    if (sub.readyState===4 && sub.status===200) {
+                        if (sub.responseText !== "") {
+							alert(sub.responseText);
+							formPass.value = "";
+                        }
+						else {
+							window.location.replace("HumkaChat.html");
+						}
+                    }
+                }
+
+                sub.open("POST", "accountHandle.php");
+				var forSend = {
+					loginname: formLogin.value,
+					loginpass: formPass.value
+				}
+				forSend = JSON.stringify(forSend);
+                sub.send(forSend);
+			});
+			var red = new XMLHttpRequest();
+			red.onreadystatechange = function(){
+				if (red.readyState===4 && red.status===200) {
+					if (red.responseText !== "") {
+						window.location.replace("HumkaChat.html");
+					}
+					else {
+					}
+				}
+			}
+
+			red.open("POST", "accountHandle.php");
+			var forSend = {
+				access: "cani?"
+			}
+			forSend = JSON.stringify(forSend);
+			red.send(forSend);
+
+		</script>
+	</body>
+</html>
