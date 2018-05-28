@@ -174,22 +174,22 @@
 								var child2   = document.createTextNode(": "+response[i].message);
 								pointer1.appendChild(child2);
 								chatWindow.appendChild(pointer1);
-								label1.addEventListener("click", function(){
+								chatWindow.querySelector("#qwe"+response[i].id).addEventListener("click", function(){
 									if (inputFormAfter.value.indexOf("@") >= 0) {
 										var upto = inputFormAfter.value.indexOf(" ", inputFormAfter.value.indexOf("@"));
 										if (upto === -1) {
-											inputFormAfter.value       = "@"+name;
+											inputFormAfter.value       = "@"+this.innerHTML;
 											inputFormAfter.style.color = "purple";
 										}
 										else {
 											var rest = inputFormAfter.value.substring(upto);
 											rest     = rest.trim();
-											inputFormAfter.value       = "@"+name+" "+rest;
+											inputFormAfter.value       = "@"+this.innerHTML+" "+rest;
 											inputFormAfter.style.color = "purple";
 										}
 									}
 									else {
-										inputFormAfter.value       = "@"+name+" "+inputFormAfter.value.substring(0);
+										inputFormAfter.value       = "@"+this.innerHTML+" "+inputFormAfter.value.substring(0);
 										inputFormAfter.style.color = "purple";
 									}
 								});
@@ -198,34 +198,33 @@
 								//////////////////////////////////////////////////////
 								var name1    = response[i].to_user;
 								var pointer1 = document.createElement("div");
-								var label1   = document.createElement("label");
-								pointer1.setAttribute("id", "qwe"+response[i].id); //pointer1.id = "qwe"+response[i].id;
+								var label2   = document.createElement("label");
+								pointer1.setAttribute("id", "qwe"+response[i].id);
 								pointer1.style.cssText = "color:purple";
 								var child1   = document.createTextNode(response[i].to_user);
 								var text     = document.createTextNode("To ");
 								pointer1.appendChild(text);
-								label1.appendChild(child1);
-								pointer1.appendChild(label1);
+								label2.appendChild(child1);
+								pointer1.appendChild(label2);
 								var child2   = document.createTextNode(": "+response[i].message);
 								pointer1.appendChild(child2);
 								chatWindow.appendChild(pointer1);
-								//////////////////////////////////////////////
-								label1.addEventListener("click", function(){
+								chatWindow.querySelector("#qwe"+response[i].id).addEventListener("click", function(){
 									if (inputFormAfter.value.indexOf("@") >= 0) {
 										var upto = inputFormAfter.value.indexOf(" ", inputFormAfter.value.indexOf("@"));
 										if (upto === -1) {
-											inputFormAfter.value       = "@"+name1;
+											inputFormAfter.value       = "@"+this.innerHTML;
 											inputFormAfter.style.color = "purple";
 										}
 										else {
 											var rest = inputFormAfter.value.substring(upto);
 											rest = rest.trim();
-											inputFormAfter.value       = "@"+name1+" "+rest;
+											inputFormAfter.value       = "@"+this.innerHTML+" "+rest;
 											inputFormAfter.style.color = "purple";
 										}
 									}
 									else {
-										inputFormAfter.value       = "@"+name1+" "+inputFormAfter.value.substring(0);
+										inputFormAfter.value       = "@"+this.innerHTML+" "+inputFormAfter.value.substring(0);
 										inputFormAfter.style.color = "purple";
 									}
 								});
@@ -246,22 +245,22 @@
 								pointer1.appendChild(child2);
 								chatWindow.appendChild(pointer1);
 								//////////////////////////////////////////////////
-								label1.addEventListener("click", function(){
+								chatWindow.querySelector("#qwe"+response[i].id).addEventListener("click", function(){
 									if (inputFormAfter.value.indexOf("@") >= 0) {
 										var upto = inputFormAfter.value.indexOf(" ", inputFormAfter.value.indexOf("@"));
 										if (upto === -1) {
-											inputFormAfter.value       = "@"+name2;
+											inputFormAfter.value       = "@"+this.innerHTML;
 											inputFormAfter.style.color = "purple";
 										}
 										else {
 											var rest = inputFormAfter.value.substring(upto);
 											rest = rest.trim();
-											inputFormAfter.value       = "@"+name2+" "+rest;
+											inputFormAfter.value       = "@"+this.innerHTML+" "+rest;
 											inputFormAfter.style.color = "purple";
 										}
 									}
 									else {
-										inputFormAfter.value       = "@"+name2+" "+inputFormAfter.value.substring(0);
+										inputFormAfter.value       = "@"+this.innerHTML+" "+inputFormAfter.value.substring(0);
 										inputFormAfter.style.color = "purple";
 									}
 								});

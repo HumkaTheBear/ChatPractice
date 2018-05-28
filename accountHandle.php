@@ -60,7 +60,6 @@
         $userlog = $receive->loginname;
         $userlog = strtolower($userlog);
         $userpass = $receive->loginpass;
-        // echo ('CHECKING: '. $userlog);
         try{
 			$connection = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
 			$stmt = $connection->prepare("
@@ -72,10 +71,8 @@
             $stmt->execute();
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            // print_r($result);
             if (isset($result['username'])) {
                 if ($result['username']===$userlog && $result['password']===$userpass) {
-                    // echo "I AM IN";
                     session_start();
                     $_SESSION['username'] = $result['username'];
                     $_SESSION['password'] = $result['password'];
@@ -108,8 +105,7 @@
         session_start();
         session_destroy();
     }
-    elseif (isset($receive->message)){//TODO
-        // echo("mesage");
+    elseif (isset($receive->message)){
         try{
             session_start();
 			$connection = new PDO("mysql:host=$servername;dbname=$dbname", $username, $password);
@@ -123,7 +119,6 @@
             $stmt->bindParam(':message', $receive->message);
 
             $stmt->execute();
-            // $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
 
             $connection = null;
